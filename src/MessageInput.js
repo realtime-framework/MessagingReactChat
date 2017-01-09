@@ -9,8 +9,15 @@ class MessageInput extends Component {
       sentAt: new Date().toLocaleTimeString()
     };
   
-    // send message to the chat channel
-    this.props.realtime.send(this.props.chatChannel, JSON.stringify(message));
+    // publish message into the chat channel
+    const ttl = 5 * 60; // 5 minutes
+    this.props.realtime.publish(this.props.chatChannel, JSON.stringify(message), ttl, (err, seqId) => {
+      if(err) {
+        console.log("Error publishing message:", err);
+      } else {
+        console.log("Message successfully published. SeqID:", seqId);
+      }
+    });
     this.refs.msgInput.value = "";
   }
 
